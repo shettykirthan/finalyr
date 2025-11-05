@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next"
 const allNavItems = [
   { name: "Home", icon: Home, href: "/" },
   { name: "SignUp", icon: Home, href: "/Auth" },
+  { name: "Login", icon: Home, href: "/Auth/login" },
   { name: "Games", icon: Gamepad2, href: "/Games" },
   { name: "Stories", icon: Book, href: "/story-creator" },
   { name: "Learn", icon: Book, href: "/Learn_chatbot/chatbot" },
@@ -33,11 +34,11 @@ export default function Sidebar() {
 
     if (token) {
       // ✅ If token exists → show everything except SignUp
-      setNavItems(allNavItems.filter((item) => item.name !== "SignUp"))
+      setNavItems(allNavItems.filter((item) => item.name !== "SignUp" && item.name !== "Login"))
     } else {
       // 🚫 If no token → show only Home + SignUp
       setNavItems(allNavItems.filter((item) =>
-        item.name === "Home" || item.name === "SignUp"
+        item.name === "Home" || item.name === "SignUp" || item.name === "Login"
       ))
     }
   }, [])

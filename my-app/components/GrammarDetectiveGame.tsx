@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import confetti from 'canvas-confetti'
 import { Button } from "@/components/ui/button"
 import { useTranslation } from "react-i18next"
@@ -47,9 +47,6 @@ const levels = [
 export default function GrammarDetectiveGame() {
   const [currentLevel, setCurrentLevel] = useState(0)
   const { t, i18n } = useTranslation()
-  const changeLanguage = (lang: string) => {
-    i18n.changeLanguage(lang)
-  }
   const [currentSentence, setCurrentSentence] = useState(0)
   const [score, setScore] = useState(0)
   const [correctAnswers, setCorrectAnswers] = useState(0)
@@ -57,8 +54,6 @@ export default function GrammarDetectiveGame() {
   const [timeLeft, setTimeLeft] = useState(levels[currentLevel].time)
   const [gameOver, setGameOver] = useState(false)
   const [feedback, setFeedback] = useState<string | null>(null)
-
-
 
   useEffect(() => {
     if (timeLeft > 0 && !gameOver) {
@@ -88,14 +83,13 @@ export default function GrammarDetectiveGame() {
   }
 
   const handleAnswer = (isCorrect: boolean) => {
-    // Update score and feedback based on correctness
     if (isCorrect === levels[currentLevel].sentences[currentSentence].correct) {
       setScore(score + 1)
       setCorrectAnswers(correctAnswers + 1)
-      setFeedback('Correct!')
+      setFeedback('✅ Correct!')
     } else {
       setIncorrectAnswers(incorrectAnswers + 1)
-      setFeedback('Incorrect. Try again!')
+      setFeedback('❌ Incorrect. Try again!')
     }
 
     if (currentSentence + 1 < levels[currentLevel].sentences.length) {
@@ -132,48 +126,95 @@ export default function GrammarDetectiveGame() {
     return `${year}-${month}-${day}`
   }
 
-  const saveGameDataToLocalStorage = () => {
+  // ✅ FIXED: Correct average calculation and variable usage
+  const saveGameDataToLocalStorage = async () => {
     const todayKey = getTodayKey()
-    const currentData = JSON.parse(localStorage.getItem('grammarDetectiveGame') || '[]')
+    let currentData = JSON.parse(localStorage.getItem("grammarDetectiveGame") || "[]")
 
-    const matchScore = correctAnswers - incorrectAnswers
-    const averageScore = correctAnswers + incorrectAnswers > 0 ? matchScore / (correctAnswers) : 0
+    const totalQuestions = correctAnswers + incorrectAnswers
+    const matchScore = correctAnswers
+
+    // ✅ Prevent division by zero
+    let averageScore = 0
+    if (totalQuestions > 0) {
+      averageScore = correctAnswers / totalQuestions
+    }
 
     const newMatch = {
-      match: currentData.length > 0 ? currentData[currentData.length - 1].matches.length + 1 : 1,
+      match:
+        currentData.length > 0
+          ? currentData[currentData.length - 1].matches.length + 1
+          : 1,
       score: matchScore,
       correct: correctAnswers,
       incorrect: incorrectAnswers,
-      totalQuestions: 5,
+      totalQuestions: totalQuestions,
       averageScore: averageScore.toFixed(2),
     }
 
-    if (currentData.length === 0 || currentData[currentData.length - 1].date !== todayKey) {
+    // ✅ Update or create today's record
+    if (
+      currentData.length === 0 ||
+      currentData[currentData.length - 1].date !== todayKey
+    ) {
       currentData.push({
         date: todayKey,
         TotalMatches: 1,
         TotalAverageScore: newMatch.averageScore,
-        matches: [newMatch]
+        matches: [newMatch],
       })
     } else {
-      currentData[currentData.length - 1].matches.push(newMatch)
-      currentData[currentData.length - 1].TotalMatches = currentData[currentData.length - 1].matches.length
-      const totalAverageScore = (
-        currentData[currentData.length - 1].matches.reduce((sum, match) => sum + parseFloat(match.averageScore), 0) /
-        currentData[currentData.length - 1].matches.length
+      const todayHistory = currentData[currentData.length - 1]
+      todayHistory.matches.push(newMatch)
+      todayHistory.TotalMatches = todayHistory.matches.length
+      todayHistory.TotalAverageScore = (
+        todayHistory.matches.reduce(
+          (sum, match) => sum + parseFloat(match.averageScore),
+          0
+        ) / todayHistory.matches.length
       ).toFixed(2)
-      currentData[currentData.length - 1].TotalAverageScore = totalAverageScore
     }
 
-    localStorage.setItem('grammarDetectiveGame', JSON.stringify(currentData))
+    localStorage.setItem("grammarDetectiveGame", JSON.stringify(currentData))
+
+    // ✅ Push to MongoDB backend
+    try {
+      const user = JSON.parse(sessionStorage.getItem("user") || "{}")
+      if (!user || !user.id) {
+        console.error("User not found in sessionStorage")
+        return
+      }
+
+      const userId = user.id
+      const response = await fetch("http://localhost:5001/api/game/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId,
+          gameName: "GrammarDetectiveGame",
+          gameHistory: currentData,
+        }),
+      })
+
+      const result = await response.json()
+      if (!result.success) {
+        console.error("❌ Backend save failed:", result.error)
+      } else {
+        console.log("✅ GrammarDetectiveGame history synced with backend", result.data)
+      }
+    } catch (err) {
+      console.error("Error saving GrammarDetectiveGame to backend:", err)
+    }
   }
 
   return (
     <div className="text-center">
       <h2 className="text-3xl font-bold mb-4 text-blue-600">{t("GrammarDetectiveGame")}</h2>
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
         <p className="text-xl">{levels[currentLevel].name}</p>
-        <p className="text-xl">{t("Score")} {score}/{levels.reduce((acc, level) => acc + level.sentences.length, 0)}</p>
+        <p className="text-xl">
+          {t("Score")} {score}/{levels.reduce((acc, level) => acc + level.sentences.length, 0)}
+        </p>
         <p className="text-xl">{t("Time")} {timeLeft}s</p>
         <Dialog>
           <DialogTrigger asChild>
@@ -195,6 +236,7 @@ export default function GrammarDetectiveGame() {
           </DialogContent>
         </Dialog>
       </div>
+
       {!gameOver ? (
         <div className="mb-8">
           <div className="text-2xl mb-4">{levels[currentLevel].sentences[currentSentence].text}</div>
@@ -235,6 +277,9 @@ export default function GrammarDetectiveGame() {
             <Button 
               onClick={() => {
                 setCurrentLevel(0)
+                setScore(0)
+                setCorrectAnswers(0)
+                setIncorrectAnswers(0)
                 startNewLevel()
               }}
               className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
