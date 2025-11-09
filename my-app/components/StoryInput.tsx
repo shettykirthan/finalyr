@@ -24,13 +24,19 @@ export default function StoryInput({ onSubmit, triggerCanvasDownload }: StoryInp
 
     // Submit the story
     try {
-      const response = await fetch("http://localhost:5000/StoryTeller", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ text: input }),
-      })
+      const user = JSON.parse(sessionStorage.getItem("user") || "{}");
+
+// Get the age from the stored user object
+        const age = user?.age || 10; // fallback to 10 if not found
+
+        // Then send it in the request
+        const response = await fetch("http://localhost:5000/StoryTeller", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ text: input, age: age }),
+        });
       const data = await response.json()
       console.log("Response from server:", data)
       onSubmit(data)

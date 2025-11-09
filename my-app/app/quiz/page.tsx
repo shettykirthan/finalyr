@@ -73,10 +73,14 @@ export default function QuizPage() {
   const fetchQuizQuestions = async (storyText: string) => {
     setLoading(true);
     try {
+      const user = JSON.parse(sessionStorage.getItem("user") || "{}");
+
+// Get the age from the stored user object
+        const age = user?.age || 10; // fallback to 10 if not found
       const response = await fetch('http://localhost:5000/QuizBot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: storyText }),
+        body: JSON.stringify({ text: storyText , age: age}),
       });
 
       const data = await response.json();

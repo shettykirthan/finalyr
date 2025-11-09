@@ -134,7 +134,7 @@ export default function SignUpPage() {
                   className="h-12 text-lg border-2 border-orange-200 focus:border-orange-400 rounded-xl transition-all duration-300 focus:scale-105"
                   required
                   min="1"
-                  max="18" // Assuming a typical age range for a learning app
+                  max="100" // Assuming a typical age range for a learning app
                 />
               </div>
               {/* --- */}
