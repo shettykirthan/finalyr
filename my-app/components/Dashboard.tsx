@@ -21,7 +21,7 @@ const GAME_SCORE_KEYS = [
   { key: 'ColorMatchingGame', name: 'ColorMatchingGame' },
   { key: 'EmotionRecognitionGame', name: 'EmotionRecognitionGame' },
   { key: 'ShapeSortingGame', name: 'ShapeSortingGame' },
-  { key: 'MusicalGame', name: 'MusicalGame' },
+  
   { key: 'GrammarDetectiveGame', name: 'GrammarDetectiveGame' },
   { key: 'BasicArithmeticGame', name: 'BasicArithmeticGame' }
 ];

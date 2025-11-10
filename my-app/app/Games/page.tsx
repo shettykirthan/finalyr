@@ -28,13 +28,7 @@ const games = [
     color: 'bg-green-300',
     icon: '⭐'
   },
-  {
-    id: 'musical-patterns',
-    titleKey: 'musicalPatternsTitle',
-    descriptionKey: 'musicalPatternsDescription',
-    color: 'bg-purple-300',
-    icon: '🎵'
-  },
+  
   {
     id: 'memory-card',
     titleKey: 'memoryCardTitle',

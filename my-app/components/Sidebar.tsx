@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import {
   ChevronRight,
   ChevronLeft,
@@ -10,6 +11,7 @@ import {
   Gamepad2,
   Book,
   BarChart2,
+  LogOut,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
@@ -27,21 +29,46 @@ const allNavItems = [
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false)
   const [navItems, setNavItems] = useState(allNavItems)
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
+  const router = useRouter()
 
   useEffect(() => {
     const token = sessionStorage.getItem("token")
 
     if (token) {
-      // ✅ If token exists → show everything except SignUp
-      setNavItems(allNavItems.filter((item) => item.name !== "SignUp" && item.name !== "Login"))
+      // ✅ If token exists → show everything except SignUp and Login + add Logout
+      setNavItems([
+        ...allNavItems.filter(
+          (item) => item.name !== "SignUp" && item.name !== "Login"
+        ),
+        { name: "Logout", icon: LogOut, href: "#" },
+      ])
     } else {
-      // 🚫 If no token → show only Home + SignUp
-      setNavItems(allNavItems.filter((item) =>
-        item.name === "Home" || item.name === "SignUp" || item.name === "Login"
-      ))
+      // 🚫 If no token → show only Home + SignUp + Login
+      setNavItems(
+        allNavItems.filter(
+          (item) =>
+            item.name === "Home" || item.name === "SignUp" || item.name === "Login"
+        )
+      )
     }
   }, [])
+
+  const handleLogout = async () => {
+    try {
+      // Call backend logout to clear session (optional)
+      
+
+      // Remove token from sessionStorage
+      sessionStorage.removeItem("token")
+      sessionStorage.removeItem("user")
+
+      // Redirect to login page
+      router.push("/Auth/login")
+    } catch (error) {
+      console.error("Logout failed:", error)
+    }
+  }
 
   return (
     <motion.div
@@ -64,12 +91,22 @@ export default function Sidebar() {
                   exit={{ opacity: 0, x: -50 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <Link href={item.href} passHref>
-                    <motion.div className="flex items-center py-2 px-4 hover:bg-blue-600 whitespace-nowrap">
+                  {item.name === "Logout" ? (
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center py-2 px-4 hover:bg-blue-600 whitespace-nowrap text-left"
+                    >
                       <item.icon className="mr-2" size={20} />
                       {t(item.name)}
-                    </motion.div>
-                  </Link>
+                    </button>
+                  ) : (
+                    <Link href={item.href} passHref>
+                      <motion.div className="flex items-center py-2 px-4 hover:bg-blue-600 whitespace-nowrap">
+                        <item.icon className="mr-2" size={20} />
+                        {t(item.name)}
+                      </motion.div>
+                    </Link>
+                  )}
                 </motion.div>
               ))}
           </AnimatePresence>

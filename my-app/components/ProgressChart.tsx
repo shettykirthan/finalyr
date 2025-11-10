@@ -10,7 +10,7 @@ interface ProgressChartProps {
   xAxisKey?: string;
   lastUpdated: string;
   height?: number;
-  tooltipFormatter?: (value: number) => string;
+    tooltipFormatter?: (value: number) => string;
 }
 
 export function ProgressChart({ 
