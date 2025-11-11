@@ -44,7 +44,7 @@ export default function QuizPage() {
   const [lastAnswerCorrect, setLastAnswerCorrect] = useState<boolean | null>(null)
   const [loading, setLoading] = useState(false);
   const [questions, setQuestions] = useState([]);
-  const [countdown, setCountdown] = useState(10); // Countdown state for the timer
+  const [countdown, setCountdown] = useState(20); // Countdown state for the timer
   const [isButtonDisabled, setIsButtonDisabled] = useState(true); // State to disable the start button initially
 
   const searchParams = useSearchParams()
@@ -84,13 +84,13 @@ export default function QuizPage() {
       });
 
       const data = await response.json();
-
+      console.log('Fetched Questions1 :', data);
       const fetchedQuestions = data.response.map((item) => ({
         question: item.question,
         options: item.options,
         correctAnswer: item.correctAnswer,
       }))
-
+      console.log('Fetched Questions2 :', data.response);
       console.log('Fetched Questions3 :', fetchedQuestions);
 
       setQuestions(fetchedQuestions);

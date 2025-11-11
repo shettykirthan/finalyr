@@ -57,10 +57,14 @@ def get_age_appropriate_story_instructions(age):
         - Include friendly characters and happy endings
         - Vocabulary should be at preschool/kindergarten level
         - Make it engaging with simple adventures
+        - If generating quiz questions or multiple-choice answers:
+            * Keep each option extremely short (1–3 words)
+            * Avoid long phrases or sentences
+            * Use simple nouns or actions as choices
         """
     elif age >= 7 and age < 13:
         return """
-        Create a story for children aged 7-12 years:
+        Create a story for children aged 7–12 years:
         - Use age-appropriate vocabulary with some challenging words
         - Include more detailed descriptions and character development
         - Create a clear plot with beginning, middle, and end
@@ -69,10 +73,14 @@ def get_age_appropriate_story_instructions(age):
         - Make characters relatable with realistic emotions
         - Keep the story engaging with some suspense or excitement
         - End with a satisfying resolution and positive message
+        - If generating quiz questions or multiple-choice answers:
+            * Keep each option concise (1–4 words)
+            * Avoid full sentences or explanations
+            * Make them distinct and easy to read
         """
     elif age >= 13 and age <= 20:
         return """
-        Create a story for teenagers aged 13-20 years:
+        Create a story for teenagers aged 13–20 years:
         - Use sophisticated vocabulary and varied sentence structures
         - Develop complex characters with deeper motivations
         - Include nuanced themes like identity, relationships, or personal growth
@@ -81,6 +89,10 @@ def get_age_appropriate_story_instructions(age):
         - Balance action with emotional depth and introspection
         - Make the story thought-provoking while still entertaining
         - Address age-appropriate challenges and life lessons
+        - If generating quiz questions or multiple-choice answers:
+            * Keep each option short and to the point (2–5 words)
+            * Avoid using full sentences
+            * Focus on clarity and precision
         """
     else:
         return """
@@ -94,6 +106,10 @@ def get_age_appropriate_story_instructions(age):
         - Balance narrative with philosophical or emotional resonance
         - Craft an ending that is meaningful and thought-provoking, not necessarily happy
         - Make the story intellectually and emotionally engaging
+        - If generating quiz questions or multiple-choice answers:
+            * Ensure options are concise (max 5 words)
+            * Avoid long phrases or full sentences
+            * Use short descriptive terms or keywords
         """
 
 
@@ -145,30 +161,45 @@ def get_age_appropriate_quiz_instructions(age):
         - Keep language playful and easy to understand
         - Avoid complex reasoning or abstract concepts
         - Example: "What color was the ball?" or "Who was the main character?"
+        - If generating multiple-choice options:
+            * Keep each option extremely short (1–3 words)
+            * Avoid full sentences
+            * Use simple nouns or adjectives (e.g., "red", "dog", "sunny")
         """
+
     elif age >= 7 and age < 13:
         return """
-        Age Group: 7-12 years (Elementary to Middle School)
+        Age Group: 7–12 years (Elementary to Middle School)
         - Use age-appropriate vocabulary with moderate complexity
         - Include questions about sequence of events, cause and effect, and character feelings
         - Test understanding of story structure and character motivations
         - Mix direct recall questions with some basic inference questions
         - Use clear language but introduce some analytical thinking
         - Example: "Why did the character make that choice?" or "What happened after the big event?"
+        - If generating multiple-choice options:
+            * Keep each option short (1–4 words)
+            * Avoid long explanations
+            * Focus on clarity — make each choice distinct and easily understandable
         """
+
     elif age >= 13 and age <= 20:
         return """
-        Age Group: 13-20 years (Teenagers)
+        Age Group: 13–20 years (Teenagers)
         - Use more sophisticated vocabulary and complex concepts
         - Focus on themes, character development, symbolism, and deeper meanings
         - Test critical thinking, analysis, and interpretation skills
         - Include questions about literary devices and author's purpose
         - Challenge students to think beyond surface-level details
         - Example: "What theme does this story explore?" or "How does the setting influence the plot?"
+        - If generating multiple-choice options:
+            * Keep each option concise (2–5 words)
+            * Avoid using full sentences
+            * Use clear, content-focused phrases (e.g., "freedom vs control", "internal conflict")
         """
+
     else:
         return """
-        Age Group: 20+ years (Adults - DIFFICULT LEVEL)
+        Age Group: 20+ years (Adults - Difficult Level)
         - Use advanced and sophisticated vocabulary
         - Create challenging questions that require deep analysis and critical thinking
         - Focus on complex themes, subtext, narrative techniques, and philosophical implications
@@ -176,6 +207,10 @@ def get_age_appropriate_quiz_instructions(age):
         - Include questions about contextual analysis, intertextuality, and comparative literature
         - Challenge with questions that have subtle distinctions between answer choices
         - Require synthesis of multiple story elements and abstract reasoning
+        - If generating multiple-choice options:
+            * Keep options brief (max 5–6 words)
+            * Avoid long, essay-like phrases
+            * Use abstract but compact phrases (e.g., "moral duality", "loss of innocence", "existential doubt")
         """
 
 
@@ -350,7 +385,7 @@ def videoAnalyzer():
 
     print(f'Video processing complete: {video_file.uri}')
     prompt = "Pretend like you're talking to the person in the video"
-    model = genai.GenerativeModel(model_name="models/gemini-1.5-flash")
+    model = genai.GenerativeModel(model_name="models/gemini-2.5-flash")
 
     response = model.generate_content([prompt, video_file], request_options={"timeout": 600})
     print(response.text)
